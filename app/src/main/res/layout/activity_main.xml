@@ -1,14 +1,15 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center"
     android:orientation="vertical"
     android:padding="16dp"
-    tools:context=".MainActivity">
+    android:background="@color/white">
 
     <TextView
+        android:id="@+id/krokomerTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -42,19 +43,19 @@
     <ProgressBar
         android:id="@+id/progressBar"
         style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="120dp"
-        android:layout_height="180dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="20dp"
-        android:background="@drawable/circle"
-        android:padding="10dp"
-        android:progressDrawable="@drawable/progress_bar" />
+        android:progressDrawable="@android:drawable/progress_horizontal" />
+
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_gravity="center_horizontal">
+        android:layout_gravity="center_horizontal"
+        android:gravity="center_vertical">
 
         <ImageView
             android:layout_width="79dp"
@@ -64,20 +65,21 @@
 
         <TextView
             android:id="@+id/stepCountTextView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Steps: 0"
-            android:padding="20dp"
-            android:textSize="24sp"
-            android:textColor="@color/black"
-            android:gravity="center_vertical" />
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Steps: 0"
+        android:padding="20dp"
+        android:textSize="24sp"
+        android:textColor="@color/black"
+        android:gravity="center_vertical" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_gravity="center_horizontal">
+        android:layout_gravity="center_horizontal"
+        android:gravity="center_vertical">
 
         <ImageView
             android:layout_width="79dp"
@@ -97,23 +99,40 @@
             android:textSize="24sp" />
     </LinearLayout>
 
-    <Spinner
-        android:id="@+id/weightSpinner"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="2dp"
-        android:entries="@array/weight_array" />
+        android:gravity="center_vertical">
 
-    <Spinner
-        android:id="@+id/modeSpinner"
+        <Spinner
+            android:id="@+id/weightSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginTop="10dp"
+            android:layout_weight="1"
+            android:entries="@array/weight_array" />
+
+        <Spinner
+            android:id="@+id/modeSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginTop="10dp"
+            android:layout_weight="1"
+            android:entries="@array/mode_array" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/startPauseButton"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="42dp"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="2dp"
-        android:entries="@array/mode_array" />
-
-
+        android:layout_marginTop="20dp"
+        android:text="Start" />
 
     <Button
         android:id="@+id/resetButton"
@@ -123,4 +142,13 @@
         android:layout_marginTop="20dp"
         android:text="Resetovat kroky" />
 
+    <TextView
+        android:id="@+id/timerTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="20dp"
+        android:text="Čas: 00:00:00"
+        android:textColor="@color/black"
+        android:textSize="25sp" />
 </LinearLayout>

@@ -1,59 +1,53 @@
 package com.example.app2;
 
 import android.content.Context;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity implements SensorEventListener {
+public class MainActivity extends AppCompatActivity implements StepCounter.StepListener {
 
     private TextView stepCountTextView;
     private TextView distanceTextView;
     private TextView caloriesTextView;
+    private TextView timerTextView;
     private ProgressBar progressBar;
     private TextView stepCountTargetTextView;
     private Spinner modeSpinner;
     private Spinner weightSpinner;
-    private EditText weightEditText;
     private Button resetButton;
-    private SensorManager sensorManager;
-    private Sensor stepCountSensor;
+    private Button startPauseButton;
 
-    private int stepCount = 0;
-    private int initialStepCount = -1;
-    private double stepLengthInMeters = 0.75;
+    private StepCounter stepCounter;
+    private Timer timer;
+
     private int stepCountTarget = 8000;
-    private double totalCaloriesBurned = 0.0;
     private String selectedMode = "Chůze";
-    private int weight = 70; // Default weight
+    private int weight = 70;
 
     @Override
     protected void onStop() {
         super.onStop();
-        if (stepCountSensor != null) {
-            sensorManager.unregisterListener(this);
+        if (stepCounter != null) {
+            stepCounter.unregisterSensor();
         }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (stepCountSensor != null) {
-            sensorManager.registerListener(this, stepCountSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        if (stepCounter != null) {
+            stepCounter.registerSensor();
         }
     }
 
@@ -62,28 +56,31 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        stepCountTextView = findViewById(R.id.stepCountTextView);
+        stepCountTextView = findViewById(R.id.krokomerTextView);
         distanceTextView = findViewById(R.id.distanceTextView);
         caloriesTextView = findViewById(R.id.caloriesTextView);
+        timerTextView = findViewById(R.id.timerTextView);
         stepCountTargetTextView = findViewById(R.id.KrokovyCilTextView);
         progressBar = findViewById(R.id.progressBar);
         modeSpinner = findViewById(R.id.modeSpinner);
         weightSpinner = findViewById(R.id.weightSpinner);
         resetButton = findViewById(R.id.resetButton);
+        startPauseButton = findViewById(R.id.startPauseButton);
 
-        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        stepCountSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
+        SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        stepCounter = new StepCounter(this, sensorManager);
+        timer = new Timer(timerTextView, startPauseButton);
 
-        stepCountTextView.setText("Počet kroků: " + stepCount);
+        stepCountTextView.setText("Počet kroků: 0");
         progressBar.setMax(stepCountTarget);
-        progressBar.setProgress(stepCount);
-
+        progressBar.setProgress(0);
         stepCountTargetTextView.setText("Váš cílový počet kroků: " + stepCountTarget);
 
-        if (stepCountSensor == null) {
-            stepCountTextView.setText("Senzor pro snímání kroků není k dispozici");
-        }
+        setupSpinners();
+        setupButtons();
+    }
 
+    private void setupSpinners() {
         ArrayAdapter<CharSequence> modeAdapter = ArrayAdapter.createFromResource(this,
                 R.array.mode_array, android.R.layout.simple_spinner_item);
         modeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -92,13 +89,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 selectedMode = parentView.getItemAtPosition(position).toString();
-                calculateCalories(); // Recalculate calories when mode changes
+                stepCounter.calculateCalories(selectedMode, weight);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parentView) {
                 selectedMode = "Chůze";
-                calculateCalories();
             }
         });
 
@@ -111,67 +107,51 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 String selectedWeight = parentView.getItemAtPosition(position).toString();
                 weight = Integer.parseInt(selectedWeight.replaceAll("[^0-9]", ""));
-                calculateCalories(); // Recalculate calories when weight changes
+                stepCounter.calculateCalories(selectedMode, weight);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parentView) {
-                weight = 70; // Default weight
-                calculateCalories();
+                weight = 70;
             }
         });
+    }
 
-        resetButton.setOnClickListener(view -> resetStepCount());
+    private void setupButtons() {
+        resetButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                reset();
+            }
+        });
+        startPauseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                timer.toggleTimer();
+            }
+        });
+    }
+
+    private void reset() {
+        stepCounter.reset();
+        timer.reset();
+        stepCountTextView.setText("Počet kroků: 0");
+        progressBar.setProgress(0);
+        distanceTextView.setText("Vzdálenost v km: 0.00");
+        caloriesTextView.setText("Kalorie: 0.0");
+        stepCountTargetTextView.setText("Váš cílový počet kroků: " + stepCountTarget);
     }
 
     @Override
-    public void onSensorChanged(SensorEvent sensorEvent) {
-        if (sensorEvent.sensor.getType() == Sensor.TYPE_STEP_COUNTER) {
-            int currentStepCount = (int) sensorEvent.values[0];
-
-            if (initialStepCount == -1) {
-                initialStepCount = currentStepCount;
-            }
-
-            stepCount = currentStepCount - initialStepCount;
-
-            stepCountTextView.setText("Počet kroků: " + stepCount);
-            progressBar.setProgress(stepCount);
-
-            if (stepCount >= stepCountTarget) {
-                stepCountTargetTextView.setText("Váš cílový počet kroků byl dosažen");
-            }
-
-            double distanceInKm = stepCount * stepLengthInMeters / 1000;
-            distanceTextView.setText(String.format(Locale.getDefault(), "Vzdálenost v km: %.2f", distanceInKm));
-
-            calculateCalories();
-        }
-    }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-    }
-
-    private void resetStepCount() {
-        initialStepCount = -1;
-        stepCount = 0;
-        totalCaloriesBurned = 0.0;
-
+    public void onStepCountUpdated(int stepCount, double distanceInKm, double totalCaloriesBurned) {
         stepCountTextView.setText("Počet kroků: " + stepCount);
         progressBar.setProgress(stepCount);
-        distanceTextView.setText("Vzdálenost v km: 0.00");
-        stepCountTargetTextView.setText("Váš cílový počet kroků: " + stepCountTarget);
-        caloriesTextView.setText("Kalorie: 0.0");
+        distanceTextView.setText(String.format(Locale.getDefault(), "Vzdálenost v km: %.2f", distanceInKm));
+        caloriesTextView.setText(String.format(Locale.getDefault(), "Kalorie: %.2f", totalCaloriesBurned));
     }
 
-    private void calculateCalories() {
-        double metValue = selectedMode.equals("Chůze") ? 3.5 : 7.0; // MET value for walking and running
-        double weightInKg = weight;
-        double caloriesPerMinute = (metValue * 3.5 * weightInKg) / 200;
-        double minutes = stepCount / (selectedMode.equals("Chůze") ? 100 : 150);
-        totalCaloriesBurned += caloriesPerMinute * minutes;
-
-        caloriesTextView.setText(String.format(Locale.getDefault(), "Kalorie: %.2f", totalCaloriesBurned));
+    @Override
+    public void onSensorUnavailable() {
+        Toast.makeText(this, "Senzor pro snímání kroků není k dispozici.", Toast.LENGTH_LONG).show();
     }
 }

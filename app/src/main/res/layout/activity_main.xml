@@ -29,6 +29,16 @@
         android:textColor="@color/black"
         android:textSize="25sp" />
 
+    <TextView
+        android:id="@+id/caloriesTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="8dp"
+        android:text="Kalorie: 0"
+        android:textColor="@color/black"
+        android:textSize="25sp" />
+
     <ProgressBar
         android:id="@+id/progressBar"
         style="?android:attr/progressBarStyleHorizontal"
@@ -80,54 +90,37 @@
             android:id="@+id/distanceTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="KMs: 0"
+            android:gravity="center_vertical"
             android:padding="20dp"
+            android:text="KMs: 0"
             android:textColor="@color/black"
-            android:textSize="24sp"
-            android:gravity="center_vertical" />
+            android:textSize="24sp" />
     </LinearLayout>
-
-    <Spinner
-        android:id="@+id/modeSpinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="20dp"
-        android:entries="@array/mode_array" />
-
-    <TextView
-        android:id="@+id/caloriesTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="8dp"
-        android:text="Kalorie: 0"
-        android:textColor="@color/black"
-        android:textSize="25sp" />
-
-    <Button
-        android:id="@+id/resetButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="20dp"
-        android:text="Resetovat kroky" />
 
     <Spinner
         android:id="@+id/weightSpinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="2dp"
         android:entries="@array/weight_array" />
 
-    <EditText
-        android:id="@+id/weightEditText"
+    <Spinner
+        android:id="@+id/modeSpinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
+        android:layout_marginTop="2dp"
+        android:entries="@array/mode_array" />
+
+
+
+    <Button
+        android:id="@+id/resetButton"
+        android:layout_width="wrap_content"
+        android:layout_height="42dp"
+        android:layout_gravity="center_horizontal"
         android:layout_marginTop="20dp"
-        android:hint="Zadejte váhu (kg)"
-        android:inputType="number" />
+        android:text="Resetovat kroky" />
 
 </LinearLayout>

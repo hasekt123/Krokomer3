@@ -24,8 +24,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private TextView stepCountTextView;
     private TextView distanceTextView;
     private TextView caloriesTextView;
-    private TextView stepCountTargetTextView;
     private ProgressBar progressBar;
+    private TextView stepCountTargetTextView;
     private Spinner modeSpinner;
     private Spinner weightSpinner;
     private EditText weightEditText;
@@ -69,7 +69,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         progressBar = findViewById(R.id.progressBar);
         modeSpinner = findViewById(R.id.modeSpinner);
         weightSpinner = findViewById(R.id.weightSpinner);
-        weightEditText = findViewById(R.id.weightEditText);
         resetButton = findViewById(R.id.resetButton);
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);

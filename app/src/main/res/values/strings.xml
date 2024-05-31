@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Krokoměr</string>
+    <string-array name="mode_array">
+        <item>Chůze</item>
+        <item>Běh</item>
+    </string-array>
+    <string-array name="weight_array">
+        <item>50 kg</item>
+        <item>55 kg</item>
+        <item>60 kg</item>
+        <item>65 kg</item>
+        <item>70 kg</item>
+        <item>75 kg</item>
+        <item>80 kg</item>
+        <item>85 kg</item>
+        <item>90 kg</item>
+        <item>95 kg</item>
+        <item>100 kg</item>
+        <item>105 kg</item>
+        <item>110 kg</item>
+    </string-array>
+</resources>

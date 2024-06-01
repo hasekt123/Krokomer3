@@ -9,8 +9,14 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 
+/**
+ * ConfirmationDialog shows a dialog to confirm resetting the step count.
+ */
 public class ConfirmationDialog extends DialogFragment {
 
+    /**
+     * Interface for handling dialog actions.
+     */
     public interface ConfirmationDialogListener {
         void onConfirm();
         void onCancel();

@@ -6,9 +6,14 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
+/**
+ * SpinnerListener sets up the mode and weight spinners.
+ */
 public class SpinnerListener {
 
-    // Zde mi částečně pomohlo AI
+    /**
+     * Sets up the mode spinner.
+     */
     public static void setupModeSpinner(final Activity activity, final Spinner modeSpinner, final StepCounter stepCounter, final StepDataStorage stepDataStorage) {
         ArrayAdapter<CharSequence> modeAdapter = ArrayAdapter.createFromResource(activity,
                 R.array.mode_array, android.R.layout.simple_spinner_item);
@@ -29,6 +34,9 @@ public class SpinnerListener {
         });
     }
 
+    /**
+     * Sets up the weight spinner.
+     */
     public static void setupWeightSpinner(final Activity activity, final Spinner weightSpinner, final StepCounter stepCounter, final StepDataStorage stepDataStorage) {
         ArrayAdapter<CharSequence> weightAdapter = ArrayAdapter.createFromResource(activity,
                 R.array.weight_array, android.R.layout.simple_spinner_item);

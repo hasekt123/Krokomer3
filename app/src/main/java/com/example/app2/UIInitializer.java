@@ -6,6 +6,9 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+/**
+ * UIInitializer initializes the UI components of the activity.
+ */
 public class UIInitializer {
 
     private Activity activity;
@@ -14,6 +17,9 @@ public class UIInitializer {
         this.activity = activity;
     }
 
+    /**
+     * Initializes the UI components.
+     */
     public void initializeUIComponents() {
         TextView stepCountTextView = activity.findViewById(R.id.stepCountTextView);
         TextView distanceTextView = activity.findViewById(R.id.distanceTextView);

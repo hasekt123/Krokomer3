@@ -11,11 +11,14 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-import android.view.WindowManager; // Import for keeping the screen on
-import android.content.pm.ActivityInfo; // Import for screen orientation
+import android.view.WindowManager;
+import android.content.pm.ActivityInfo;
 
 import java.util.Locale;
 
+/**
+ * MainActivity handles the main user interface for the step counter app.
+ */
 public class MainActivity extends AppCompatActivity implements StepCounter.StepListener, ConfirmationDialog.ConfirmationDialogListener {
 
     private TextView stepCountTextView;
@@ -51,6 +54,9 @@ public class MainActivity extends AppCompatActivity implements StepCounter.StepL
         loadSpinnerValues();
     }
 
+    /**
+     * Initializes the user interface components.
+     */
     private void initializeUI() {
         stepCountTextView = findViewById(R.id.stepCountTextView);
         distanceTextView = findViewById(R.id.distanceTextView);
@@ -69,6 +75,9 @@ public class MainActivity extends AppCompatActivity implements StepCounter.StepL
         progressBar.setProgress(0);
     }
 
+    /**
+     * Sets up the spinners for mode and weight selection.
+     */
     private void setupSpinners() {
         ArrayAdapter<CharSequence> modeAdapter = ArrayAdapter.createFromResource(this,
                 R.array.mode_array, android.R.layout.simple_spinner_item);
@@ -108,6 +117,9 @@ public class MainActivity extends AppCompatActivity implements StepCounter.StepL
         });
     }
 
+    /**
+     * Sets up the buttons for reset and start/pause actions.
+     */
     private void setupButtons() {
         findViewById(R.id.resetButton).setOnClickListener(v -> {
             ConfirmationDialog dialog = new ConfirmationDialog();
@@ -117,11 +129,17 @@ public class MainActivity extends AppCompatActivity implements StepCounter.StepL
         findViewById(R.id.startPauseButton).setOnClickListener(v -> timer.toggleTimer());
     }
 
+    /**
+     * Loads the previously saved spinner values.
+     */
     private void loadSpinnerValues() {
         setSpinnerSelection(modeSpinner, stepDataStorage.loadSelectedMode());
         setSpinnerSelection(weightSpinner, stepDataStorage.loadSelectedWeight() + " kg");
     }
 
+    /**
+     * Sets the selection of the given spinner to the specified value.
+     */
     private void setSpinnerSelection(Spinner spinner, String value) {
         ArrayAdapter adapter = (ArrayAdapter) spinner.getAdapter();
         for (int i = 0; i < adapter.getCount(); i++) {
@@ -142,6 +160,9 @@ public class MainActivity extends AppCompatActivity implements StepCounter.StepL
         Toast.makeText(this, "Reset canceled", Toast.LENGTH_SHORT).show();
     }
 
+    /**
+     * Resets the step count and updates the UI.
+     */
     private void resetStepCount() {
         stepCounter.reset();
         timer.reset();
@@ -162,14 +183,23 @@ public class MainActivity extends AppCompatActivity implements StepCounter.StepL
         updateCaloriesTextView(totalCaloriesBurned);
     }
 
+    /**
+     * Calculates the progress based on the step count.
+     */
     private int calculateProgress(int stepCount) {
         return (int) ((double) stepCount / stepCountTarget * progressBar.getMax());
     }
 
+    /**
+     * Updates the distance TextView with the given distance.
+     */
     private void updateDistanceTextView(double distanceInKm) {
         distanceTextView.setText(String.format(Locale.getDefault(), "Vzdálenost v km: %.2f", distanceInKm));
     }
 
+    /**
+     * Updates the calories TextView with the given calories burned.
+     */
     private void updateCaloriesTextView(double totalCaloriesBurned) {
         caloriesTextView.setText(String.format(Locale.getDefault(), "Kalorie: %.2f", totalCaloriesBurned));
     }

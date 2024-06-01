@@ -5,6 +5,9 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
+/**
+ * StepCounter handles step counting and calorie calculation.
+ */
 public class StepCounter implements SensorEventListener {
 
     private static final double STEP_LENGTH_IN_METERS = 0.75;
@@ -30,25 +33,33 @@ public class StepCounter implements SensorEventListener {
             return;
         }
 
-        // Load saved step count and calories
         this.stepCount = stepDataStorage.loadStepCount();
         this.totalCaloriesBurned = stepDataStorage.loadTotalCaloriesBurned();
 
         registerSensor();
     }
 
+    /**
+     * Registers the step counter sensor.
+     */
     public void registerSensor() {
         if (stepCountSensor != null) {
             sensorManager.registerListener(this, stepCountSensor, SensorManager.SENSOR_DELAY_NORMAL);
         }
     }
 
+    /**
+     * Unregisters the step counter sensor.
+     */
     public void unregisterSensor() {
         if (stepCountSensor != null) {
             sensorManager.unregisterListener(this);
         }
     }
 
+    /**
+     * Resets the step count and total calories burned.
+     */
     public void reset() {
         initialStepCount = -1;
         stepCount = 0;
@@ -56,6 +67,10 @@ public class StepCounter implements SensorEventListener {
         stepDataStorage.clearStepData();
     }
 
+    /**
+     * Calculates the calories burned based on the mode and weight.
+     */
+    // Zde mi pomohlo AI
     public void calculateCalories(String mode, int weight) {
         double metValue;
         switch (mode) {
@@ -67,6 +82,7 @@ public class StepCounter implements SensorEventListener {
                 metValue = 3.5;
                 break;
         }
+        // Zde už ne
         double distanceInKm = (stepCount * STEP_LENGTH_IN_METERS) / 1000.0;
         totalCaloriesBurned = metValue * weight * distanceInKm / 1.60934;
         listener.onStepCountUpdated(stepCount, distanceInKm, totalCaloriesBurned);
@@ -87,6 +103,9 @@ public class StepCounter implements SensorEventListener {
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
     }
 
+    /**
+     * Interface for handling step count updates and sensor availability.
+     */
     public interface StepListener {
         void onStepCountUpdated(int stepCount, double distanceInKm, double totalCaloriesBurned);
         void onSensorUnavailable();

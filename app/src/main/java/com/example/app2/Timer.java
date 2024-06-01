@@ -8,6 +8,9 @@ import android.widget.TextView;
 
 import java.util.Locale;
 
+/**
+ * Timer handles the step counting timer functionality.
+ */
 public class Timer {
 
     private TextView timerTextView;
@@ -26,10 +29,12 @@ public class Timer {
         this.startPauseButton = startPauseButton;
         this.stepDataStorage = stepDataStorage;
 
-        // Load saved timer state
         this.timeSwapBuff = stepDataStorage.loadTimerTime();
     }
 
+    /**
+     * Toggles the timer between start and pause.
+     */
     public void toggleTimer() {
         if (isTimerRunning) {
             timeSwapBuff += timeInMilliseconds;
@@ -44,6 +49,9 @@ public class Timer {
         isTimerRunning = !isTimerRunning;
     }
 
+    /**
+     * Resets the timer.
+     */
     public void reset() {
         isTimerRunning = false;
         startTime = 0L;

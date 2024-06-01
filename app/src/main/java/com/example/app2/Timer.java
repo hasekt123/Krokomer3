@@ -12,6 +12,7 @@ public class Timer {
 
     private TextView timerTextView;
     private Button startPauseButton;
+    private StepDataStorage stepDataStorage;
 
     private boolean isTimerRunning = false;
     private long startTime = 0L;
@@ -20,9 +21,13 @@ public class Timer {
     private long updatedTime = 0L;
     private Handler handler = new Handler(Looper.getMainLooper());
 
-    public Timer(TextView timerTextView, Button startPauseButton) {
+    public Timer(TextView timerTextView, Button startPauseButton, StepDataStorage stepDataStorage) {
         this.timerTextView = timerTextView;
         this.startPauseButton = startPauseButton;
+        this.stepDataStorage = stepDataStorage;
+
+        // Load saved timer state
+        this.timeSwapBuff = stepDataStorage.loadTimerTime();
     }
 
     public void toggleTimer() {
@@ -30,6 +35,7 @@ public class Timer {
             timeSwapBuff += timeInMilliseconds;
             handler.removeCallbacks(updateTimerThread);
             startPauseButton.setText("Start");
+            stepDataStorage.saveTimerTime(timeSwapBuff);
         } else {
             startTime = SystemClock.uptimeMillis();
             handler.postDelayed(updateTimerThread, 0);
@@ -47,6 +53,7 @@ public class Timer {
         timerTextView.setText("Čas: 00:00:00");
         startPauseButton.setText("Start");
         handler.removeCallbacks(updateTimerThread);
+        stepDataStorage.clearTimerTime();
     }
 
     private Runnable updateTimerThread = new Runnable() {

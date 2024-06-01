@@ -1,16 +1,15 @@
 package com.example.app2;
 
-import android.content.pm.ActivityInfo;
+import android.app.Activity;
 import android.os.Bundle;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import android.content.pm.ActivityInfo;
 
-public abstract class ScreenRotation extends AppCompatActivity {
-
+public class ScreenRotation extends AppCompatActivity {
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Lock the screen orientation to portrait
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
 }

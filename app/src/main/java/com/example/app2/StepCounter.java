@@ -11,7 +11,7 @@ public class StepCounter implements SensorEventListener {
 
     private SensorManager sensorManager;
     private Sensor stepCountSensor;
-    private stepDataStorage stepDataStorage;
+    private StepDataStorage stepDataStorage;
 
     private int stepCount = 0;
     private int initialStepCount = -1;
@@ -19,7 +19,7 @@ public class StepCounter implements SensorEventListener {
 
     private StepListener listener;
 
-    public StepCounter(StepListener listener, SensorManager sensorManager, stepDataStorage stepDataStorage) {
+    public StepCounter(StepListener listener, SensorManager sensorManager, StepDataStorage stepDataStorage) {
         this.listener = listener;
         this.sensorManager = sensorManager;
         this.stepCountSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
@@ -80,7 +80,7 @@ public class StepCounter implements SensorEventListener {
         }
 
         stepCount = (int) event.values[0] - initialStepCount;
-        calculateCalories("Chůze", 70); // Default calculation with initial mode and weight
+        calculateCalories(stepDataStorage.loadSelectedMode(), stepDataStorage.loadSelectedWeight());
     }
 
     @Override

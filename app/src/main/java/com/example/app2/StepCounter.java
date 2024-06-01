@@ -11,6 +11,7 @@ public class StepCounter implements SensorEventListener {
 
     private SensorManager sensorManager;
     private Sensor stepCountSensor;
+    private stepDataStorage stepDataStorage;
 
     private int stepCount = 0;
     private int initialStepCount = -1;
@@ -18,16 +19,20 @@ public class StepCounter implements SensorEventListener {
 
     private StepListener listener;
 
-    public StepCounter(StepListener listener, SensorManager sensorManager) {
+    public StepCounter(StepListener listener, SensorManager sensorManager, stepDataStorage stepDataStorage) {
         this.listener = listener;
         this.sensorManager = sensorManager;
         this.stepCountSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
+        this.stepDataStorage = stepDataStorage;
 
         if (stepCountSensor == null) {
-            // Senzor není dostupný, informujte uživatele a nepokračujte dále
             listener.onSensorUnavailable();
             return;
         }
+
+        // Load saved step count and calories
+        this.stepCount = stepDataStorage.loadStepCount();
+        this.totalCaloriesBurned = stepDataStorage.loadTotalCaloriesBurned();
 
         registerSensor();
     }
@@ -48,6 +53,7 @@ public class StepCounter implements SensorEventListener {
         initialStepCount = -1;
         stepCount = 0;
         totalCaloriesBurned = 0.0;
+        stepDataStorage.clearStepData();
     }
 
     public void calculateCalories(String mode, int weight) {
@@ -62,8 +68,9 @@ public class StepCounter implements SensorEventListener {
                 break;
         }
         double distanceInKm = (stepCount * STEP_LENGTH_IN_METERS) / 1000.0;
-        totalCaloriesBurned = metValue * weight * distanceInKm / 1.60934; // Convert km to miles
+        totalCaloriesBurned = metValue * weight * distanceInKm / 1.60934;
         listener.onStepCountUpdated(stepCount, distanceInKm, totalCaloriesBurned);
+        stepDataStorage.saveStepData(stepCount, totalCaloriesBurned);
     }
 
     @Override
@@ -82,6 +89,6 @@ public class StepCounter implements SensorEventListener {
 
     public interface StepListener {
         void onStepCountUpdated(int stepCount, double distanceInKm, double totalCaloriesBurned);
-        void onSensorUnavailable(); // Nová metoda upozornění
+        void onSensorUnavailable();
     }
 }

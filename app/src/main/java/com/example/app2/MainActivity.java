@@ -1,5 +1,4 @@
 package com.example.app2;
-
 import android.content.Context;
 import android.hardware.SensorManager;
 import android.os.Bundle;
@@ -11,11 +10,10 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity implements StepCounter.StepListener {
+public class MainActivity extends AppCompatActivity implements StepCounter.StepListener, ConfirmationDialog.ConfirmationDialogListener {
 
     private TextView stepCountTextView;
     private TextView distanceTextView;
@@ -33,30 +31,21 @@ public class MainActivity extends AppCompatActivity implements StepCounter.StepL
 
     private int stepCountTarget = 8000;
     private String selectedMode = "Chůze";
-    private int weight = 70;
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (stepCounter != null) {
-            stepCounter.unregisterSensor();
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (stepCounter != null) {
-            stepCounter.registerSensor();
-        }
-    }
+    private int weight = 70; // Default weight
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        stepCountTextView = findViewById(R.id.krokomerTextView);
+        // Initialize UI components and listeners
+        initializeUI();
+        setupListeners();
+    }
+
+
+    private void initializeUI() {
+        stepCountTextView = findViewById(R.id.stepCountTextView);
         distanceTextView = findViewById(R.id.distanceTextView);
         caloriesTextView = findViewById(R.id.caloriesTextView);
         timerTextView = findViewById(R.id.timerTextView);
@@ -70,16 +59,12 @@ public class MainActivity extends AppCompatActivity implements StepCounter.StepL
         SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         stepCounter = new StepCounter(this, sensorManager);
         timer = new Timer(timerTextView, startPauseButton);
+    }
 
-        stepCountTextView.setText("Počet kroků: 0");
-        progressBar.setMax(stepCountTarget);
-        progressBar.setProgress(0);
-        stepCountTargetTextView.setText("Váš cílový počet kroků: " + stepCountTarget);
-
+    private void setupListeners() {
         setupSpinners();
         setupButtons();
     }
-
     private void setupSpinners() {
         ArrayAdapter<CharSequence> modeAdapter = ArrayAdapter.createFromResource(this,
                 R.array.mode_array, android.R.layout.simple_spinner_item);
@@ -121,7 +106,8 @@ public class MainActivity extends AppCompatActivity implements StepCounter.StepL
         resetButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                reset();
+                ConfirmationDialog dialog = new ConfirmationDialog();
+                dialog.show(getSupportFragmentManager(), "ConfirmationDialog");
             }
         });
         startPauseButton.setOnClickListener(new View.OnClickListener() {
@@ -132,7 +118,17 @@ public class MainActivity extends AppCompatActivity implements StepCounter.StepL
         });
     }
 
-    private void reset() {
+    @Override
+    public void onConfirm() {
+        resetStepCount();
+    }
+
+    @Override
+    public void onCancel() {
+        Toast.makeText(this, "Reset canceled", Toast.LENGTH_SHORT).show();
+    }
+
+    private void resetStepCount() {
         stepCounter.reset();
         timer.reset();
         stepCountTextView.setText("Počet kroků: 0");
@@ -140,6 +136,7 @@ public class MainActivity extends AppCompatActivity implements StepCounter.StepL
         distanceTextView.setText("Vzdálenost v km: 0.00");
         caloriesTextView.setText("Kalorie: 0.0");
         stepCountTargetTextView.setText("Váš cílový počet kroků: " + stepCountTarget);
+        Toast.makeText(this, "Kroky resetovány", Toast.LENGTH_SHORT).show();
     }
 
     @Override
